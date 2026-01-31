@@ -1,13 +1,8 @@
 "use client"
 
 import type React from "react"
-
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef } from "react"
 import { motion, useMotionValue, useSpring } from "framer-motion"
-import gsap from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
-
-gsap.registerPlugin(ScrollTrigger)
 
 const projects = [
   {
@@ -44,13 +39,9 @@ function getProjectImagePath(title: string): string {
   return `/images/${title.toLowerCase().replace(/\s+/g, "_")}.jpg`
 }
 
-const MOBILE_BREAKPOINT = 768
-
 export function Works() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
-  const [isMobile, setIsMobile] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
-  const cardsRef = useRef<HTMLDivElement[]>([])
 
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
@@ -58,65 +49,12 @@ export function Works() {
   const springX = useSpring(mouseX, { stiffness: 150, damping: 20 })
   const springY = useSpring(mouseY, { stiffness: 150, damping: 20 })
 
-  // Detect mobile so we use GSAP for card animation instead of Framer on small screens
-  useEffect(() => {
-    const mq = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
-    setIsMobile(mq.matches)
-    const handler = () => setIsMobile(mq.matches)
-    mq.addEventListener("change", handler)
-    return () => mq.removeEventListener("change", handler)
-  }, [])
-
-  // GSAP scroll-triggered card animations for mobile only
-  useEffect(() => {
-    if (!isMobile) return
-
-    const cards = cardsRef.current.filter(Boolean)
-    if (cards.length === 0) return
-
-    const triggers: ScrollTrigger[] = []
-    cards.forEach((card, i) => {
-      const tween = gsap.from(card, {
-        y: 56,
-        opacity: 0,
-        scale: 0.96,
-        duration: 0.65,
-        ease: "power3.out",
-        delay: i * 0.08,
-        scrollTrigger: {
-          trigger: card,
-          start: "top 88%",
-          end: "top 55%",
-          toggleActions: "play none none none",
-        },
-      })
-      if (tween.scrollTrigger) triggers.push(tween.scrollTrigger)
-    })
-
-    const onResize = () => {
-      if (window.innerWidth >= MOBILE_BREAKPOINT) {
-        triggers.forEach((t) => t.kill())
-        gsap.set(cards, { clearProps: "all" })
-      }
-    }
-    window.addEventListener("resize", onResize)
-
-    return () => {
-      triggers.forEach((t) => t.kill())
-      window.removeEventListener("resize", onResize)
-    }
-  }, [isMobile])
-
   const handleMouseMove = (e: React.MouseEvent) => {
     if (containerRef.current) {
       const rect = containerRef.current.getBoundingClientRect()
       mouseX.set(e.clientX - rect.left)
       mouseY.set(e.clientY - rect.top)
     }
-  }
-
-  const setCardRef = (el: HTMLDivElement | null, index: number) => {
-    if (el) cardsRef.current[index] = el
   }
 
   return (
@@ -138,10 +76,9 @@ export function Works() {
         {projects.map((project, index) => (
           <motion.div
             key={project.title}
-            ref={(el) => setCardRef(el as HTMLDivElement | null, index)}
-            initial={isMobile ? { opacity: 0, y: 56 } : { opacity: 0, y: 40 }}
-            whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
-            viewport={isMobile ? undefined : { once: true }}
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             transition={{ duration: 0.8, delay: index * 0.1 }}
             className="relative border-t border-white/10 py-8 md:py-12 works-card"
             onMouseEnter={() => setHoveredIndex(index)}
