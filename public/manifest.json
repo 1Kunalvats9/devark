@@ -1,0 +1,17 @@
+{
+  "name": "Devark Solutions",
+  "short_name": "Devark",
+  "description": "Creative Agency — Digital Innovation & Expert Development. Website development, full-stack, app development, and digital solutions.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#1a1a1a",
+  "icons": [
+    {
+      "src": "/images/icon.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
