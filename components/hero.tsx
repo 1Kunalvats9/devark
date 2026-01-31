@@ -2,10 +2,19 @@
 
 import { useRef } from "react"
 import { motion, useScroll, useTransform } from "framer-motion"
+import { useLenis } from "lenis/react"
 import { SentientSphere } from "./sentient-sphere"
 
 export function Hero() {
   const containerRef = useRef<HTMLElement>(null)
+  const lenis = useLenis()
+
+  const scrollToWorks = () => {
+    const target = document.getElementById("works")
+    if (target && lenis) {
+      lenis.scrollTo(target, { duration: 1.2 })
+    }
+  }
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"],
@@ -15,7 +24,7 @@ export function Hero() {
   const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.8])
 
   return (
-    <section ref={containerRef} className="relative h-screen w-full overflow-hidden bg-[#050505]">
+    <section id="hero" ref={containerRef} className="relative h-screen w-full overflow-hidden bg-[#050505]">
       {/* 3D Sphere Background */}
       <div className="absolute inset-0">
         <SentientSphere />
@@ -45,6 +54,8 @@ export function Hero() {
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20"
         >
           <motion.button
+            type="button"
+            onClick={scrollToWorks}
             data-cursor-hover
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}

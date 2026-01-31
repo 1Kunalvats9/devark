@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import { useLenis } from "lenis/react"
 
 const navLinks = [
-  { label: "About", href: "#about" },
+  { label: "About", href: "#hero" },
   { label: "Works", href: "#works" },
   { label: "Contact", href: "#contact" },
 ]
@@ -12,6 +13,7 @@ const navLinks = [
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const lenis = useLenis()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,7 +26,9 @@ export function Navbar() {
   const scrollToSection = (href: string) => {
     setIsMenuOpen(false)
     const element = document.querySelector(href)
-    if (element) {
+    if (element && lenis) {
+      lenis.scrollTo(element, { duration: 1.2 })
+    } else if (element) {
       element.scrollIntoView({ behavior: "smooth" })
     }
   }
