@@ -2,34 +2,35 @@
 
 import type React from "react"
 import { useState, useRef } from "react"
+import Image from "next/image"
 import { motion, useMotionValue, useSpring } from "framer-motion"
 
 const projects = [
   {
     title: "Infeed Media",
     description: "Marketing and photoshooting agency",
-    url: "https://infeed-weld.vercel.app/",
+    url: "https://infeed-weld.vercel.app",
     tags: ["Next.js", "Fullstack", "GSAP", "TypeScript", "Marketing", "Photoshoot", "Agency", "Animations"],
     year: "2024",
   },
   {
     title: "Kunafa Mafias",
     description: "Shark Tank brand — premium kunafas and dishes",
-    url: "https://kunafa-mafia.vercel.app/",
+    url: "https://www.kunafamafias.in",
     tags: ["Next.js", "Fullstack", "E-Commerce", "Shark Tank", "GSAP", "TypeScript", "Backend", "Animations"],
     year: "2024",
   },
   {
     title: "Haridwar Elmas",
     description: "Cricket team of Uttarakhand",
-    url: "https://www.haridwarelmas.cricket/",
+    url: "https://www.haridwarelmas.cricket",
     tags: ["Next.js", "Fullstack", "Sports", "Cricket", "GSAP", "TypeScript", "Website", "Animations"],
     year: "2023",
   },
   {
     title: "Neobrix",
     description: "Property and real estate",
-    url: "https://neobrix.com",
+    url: undefined, // Under development
     tags: ["Next.js", "Fullstack", "Real Estate", "Property", "GSAP", "TypeScript", "Backend", "Website"],
     year: "2023",
   },
@@ -37,6 +38,60 @@ const projects = [
 
 function getProjectImagePath(title: string): string {
   return `/images/${title.toLowerCase().replace(/\s+/g, "_")}.jpg`
+}
+
+// Helper to render project content (moved from inline to avoid duplication)
+function renderProjectContent(project: typeof projects[0], index: number, hoveredIndex: number | null) {
+  return (
+    <>
+      {/* Mobile: inline image preview (no hover on touch) */}
+      <div className="md:hidden order-0 w-full aspect-video rounded-lg overflow-hidden mb-4 bg-white/5 relative">
+        <Image
+          src={getProjectImagePath(project.title)}
+          alt={project.title}
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw, 500px"
+          style={{ filter: "grayscale(30%) contrast(1.05)" }}
+        />
+      </div>
+
+      {/* Year */}
+      <span className="font-mono text-xs text-muted-foreground tracking-widest order-1 md:order-none">
+        {project.year}
+      </span>
+
+      {/* Title */}
+      <motion.h3
+        className="font-sans text-4xl md:text-6xl lg:text-7xl font-light tracking-tight group-hover:text-white/70 transition-colors duration-300 flex-1"
+        animate={{
+          x: hoveredIndex === index ? 20 : 0,
+        }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      >
+        {project.title}
+      </motion.h3>
+
+      {/* Tags */}
+      <div className="flex gap-2 flex-wrap order-2 md:order-none">
+        {project.tags.map((tag) => (
+          <span
+            key={tag}
+            className="font-mono text-[10px] tracking-wider px-3 py-1 border border-white/20 rounded-full text-muted-foreground"
+          >
+            {tag}
+          </span>
+        ))}
+      </div>
+
+      {/* Mobile: visit site hint only if url exists */}
+      {project.url && (
+        <span className="md:hidden order-3 font-mono text-[10px] tracking-wider text-muted-foreground mt-1">
+          Tap to visit site →
+        </span>
+      )}
+    </>
+  )
 }
 
 export function Works() {
@@ -84,56 +139,21 @@ export function Works() {
             onMouseEnter={() => setHoveredIndex(index)}
             onMouseLeave={() => setHoveredIndex(null)}
           >
-            <a
-              href={project.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              data-cursor-hover
-              className="group flex flex-col md:flex-row md:items-center justify-between gap-4"
-            >
-              {/* Mobile: inline image preview (no hover on touch) */}
-              <div className="md:hidden order-0 w-full aspect-video rounded-lg overflow-hidden mb-4 bg-white/5">
-                <img
-                  src={getProjectImagePath(project.title)}
-                  alt={project.title}
-                  className="w-full h-full object-cover"
-                  style={{ filter: "grayscale(30%) contrast(1.05)" }}
-                />
-              </div>
-
-              {/* Year */}
-              <span className="font-mono text-xs text-muted-foreground tracking-widest order-1 md:order-none">
-                {project.year}
-              </span>
-
-              {/* Title */}
-              <motion.h3
-                className="font-sans text-4xl md:text-6xl lg:text-7xl font-light tracking-tight group-hover:text-white/70 transition-colors duration-300 flex-1"
-                animate={{
-                  x: hoveredIndex === index ? 20 : 0,
-                }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            {project.url ? (
+              <a
+                href={project.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-cursor-hover
+                className="group flex flex-col md:flex-row md:items-center justify-between gap-4"
               >
-                {project.title}
-              </motion.h3>
-
-              {/* Tags */}
-              <div className="flex gap-2 flex-wrap order-2 md:order-none">
-                {project.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="font-mono text-[10px] tracking-wider px-3 py-1 border border-white/20 rounded-full text-muted-foreground"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-
-              {/* Mobile: visit site hint */}
-              <span className="md:hidden order-3 font-mono text-[10px] tracking-wider text-muted-foreground mt-1">
-                Tap to visit site →
-              </span>
-            </a>
+                 {renderProjectContent(project, index, hoveredIndex)}
+              </a>
+            ) : (
+                <div className="group flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-default">
+                   {renderProjectContent(project, index, hoveredIndex)}
+                </div>
+            )}
           </motion.div>
         ))}
 
@@ -153,17 +173,24 @@ export function Works() {
           transition={{ duration: 0.2 }}
         >
           {hoveredIndex !== null && (
-            <motion.img
-              src={getProjectImagePath(projects[hoveredIndex].title)}
-              alt={projects[hoveredIndex].title}
-              className="w-full h-full object-cover"
+            <motion.div
+              className="w-full h-full relative"
               initial={{ scale: 1.2 }}
               animate={{ scale: 1 }}
               transition={{ duration: 0.4 }}
               style={{
                 filter: "grayscale(50%) contrast(1.1)",
               }}
-            />
+            >
+              <Image
+                src={getProjectImagePath(projects[hoveredIndex].title)}
+                alt={projects[hoveredIndex].title}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 400px"
+                priority
+              />
+            </motion.div>
           )}
           <div className="absolute inset-0 bg-[#2563eb]/10 mix-blend-overlay" />
         </motion.div>

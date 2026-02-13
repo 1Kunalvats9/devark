@@ -13,7 +13,12 @@ export function JsonLd() {
     url: siteConfig.url,
     email: siteConfig.email,
     logo: `${siteConfig.url}${siteConfig.ogImage}`,
-    sameAs: [],
+    sameAs: [
+      siteConfig.social.twitter,
+      siteConfig.social.github,
+      siteConfig.social.linkedin,
+      siteConfig.social.instagram,
+    ],
     contactPoint: {
       "@type": "ContactPoint",
       email: siteConfig.email,

@@ -24,7 +24,7 @@ export function Hero() {
   const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.8])
 
   return (
-    <section id="hero" ref={containerRef} className="relative h-screen w-full overflow-hidden bg-[#050505]">
+    <section id="hero" ref={containerRef} className="relative h-screen w-full mt-10 md:mt-0 overflow-hidden bg-[#050505]">
       {/* 3D Sphere Background */}
       <div className="absolute inset-0">
         <SentientSphere />
